@@ -1,9 +1,14 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
+export const metadata = {
+  title: 'Home | Health Testing Services',
+  description: 'Discover your VO2 max, microbiome profile, and genetic blueprint',
+}
+
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <main className="min-h-screen">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-20 md:py-32">
         <div className="container mx-auto px-6">
@@ -53,7 +58,6 @@ export default function Home() {
           </Button>
         </div>
       </section>
-    </div>
+    </main>
   )
 }
-

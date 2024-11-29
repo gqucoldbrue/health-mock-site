@@ -1,9 +1,14 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
-export default function Services() {
+export const metadata = {
+  title: 'Services | Health Testing Services',
+  description: 'Explore our VO2 max testing, microbiome analysis, and genome sequencing services',
+}
+
+export default function ServicesPage() {
   return (
-    <div className="min-h-screen pt-20">
+    <main className="min-h-screen pt-20">
       <section className="py-20">
         <div className="container mx-auto px-6">
           <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">Our Services</h1>
@@ -42,7 +47,6 @@ export default function Services() {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   )
 }
-

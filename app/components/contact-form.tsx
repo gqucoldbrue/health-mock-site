@@ -1,75 +1,80 @@
 'use client'
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { submitContactForm } from '../actions/submit-contact-form'
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Button } from "@/components/ui/button"
 
-type FormData = {
-  name: string
-  email: string
-  message: string
-}
+const formSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+})
 
 export default function ContactForm() {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitSuccess, setSubmitSuccess] = useState(false)
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      message: "",
+    },
+  })
 
-  const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true)
-    try {
-      await submitContactForm(data)
-      setSubmitSuccess(true)
-      reset()
-    } catch (error) {
-      console.error('Error submitting form:', error)
-    } finally {
-      setIsSubmitting(false)
-    }
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Handle form submission
+    console.log(values)
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div>
-        <Input
-          {...register('name', { required: 'Name is required' })}
-          placeholder="Your Name"
-          className={errors.name ? 'border-red-500' : ''}
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <div className="space-y-2">
+        <label htmlFor="name" className="block text-sm font-medium">
+          Name
+        </label>
+        <input
+          {...form.register("name")}
+          id="name"
+          className="w-full p-2 border rounded-md"
+          placeholder="Your name"
         />
-        {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+        {form.formState.errors.name && (
+          <p className="text-red-500 text-sm">{form.formState.errors.name.message}</p>
+        )}
       </div>
-      <div>
-        <Input
-          {...register('email', { 
-            required: 'Email is required',
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: 'Invalid email address'
-            }
-          })}
-          placeholder="Your Email"
-          className={errors.email ? 'border-red-500' : ''}
+
+      <div className="space-y-2">
+        <label htmlFor="email" className="block text-sm font-medium">
+          Email
+        </label>
+        <input
+          {...form.register("email")}
+          id="email"
+          type="email"
+          className="w-full p-2 border rounded-md"
+          placeholder="your.email@example.com"
         />
-        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+        {form.formState.errors.email && (
+          <p className="text-red-500 text-sm">{form.formState.errors.email.message}</p>
+        )}
       </div>
-      <div>
-        <Textarea
-          {...register('message', { required: 'Message is required' })}
-          placeholder="Your Message"
-          className={errors.message ? 'border-red-500' : ''}
+
+      <div className="space-y-2">
+        <label htmlFor="message" className="block text-sm font-medium">
+          Message
+        </label>
+        <textarea
+          {...form.register("message")}
+          id="message"
+          className="w-full p-2 border rounded-md h-32"
+          placeholder="Your message"
         />
-        {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>}
+        {form.formState.errors.message && (
+          <p className="text-red-500 text-sm">{form.formState.errors.message.message}</p>
+        )}
       </div>
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Sending...' : 'Send Message'}
-      </Button>
-      {submitSuccess && (
-        <p className="text-green-500 text-sm mt-2">Thank you for your message. We'll get back to you soon!</p>
-      )}
+
+      <Button type="submit">Send Message</Button>
     </form>
   )
 }
-
